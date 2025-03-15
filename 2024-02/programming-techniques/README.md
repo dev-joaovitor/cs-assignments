@@ -1,7 +1,5 @@
 # Programming Techniques
 
-This repository is meant to store my code assignments from the college programming techniques classes.
-
 ## Projects
 
 ### [1. Inventory Management](#1-inventory-management)

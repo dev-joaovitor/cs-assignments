@@ -1,7 +1,5 @@
 # Programming Paradigms
 
-This repository is meant to store my code assignments from the college programming paradigms classes.
-
 ## Projects
 
 ### [1. Taxes](#1-taxes-1)
