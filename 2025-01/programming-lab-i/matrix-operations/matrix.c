@@ -6,7 +6,7 @@
 #define MAX_COLUMNS 100
 #define MAX_RANDOM_NUMBER 500
 
-int i, j;
+int i, j, k;
 
 int readMatrixSize(Matrix* matrix)
 {
@@ -43,73 +43,126 @@ int readMatrixSize(Matrix* matrix)
     return 0;
 }
 
-Matrix buildMatrix()
+Matrix buildMatrix(int rows, int columns)
 {
-    printf("\n[Building Matrix]\n");
+    //printf("\n[Building Matrix]\n");
 
-    Matrix matrix;
-    matrix.error = 0;
+    Matrix M;
+    M.error = 0;
 
-    int result = readMatrixSize(&matrix);
-
-    if (result == 1)
+    if (rows == 0 || columns == 0)
     {
-        matrix.error = 1;
-        return matrix;
+        int result = readMatrixSize(&M);
+
+        if (result == 1)
+        {
+            M.error = 1;
+            return M;
+        }
+    }
+    else
+    {
+        M.columns = columns;
+        M.rows = rows;
     }
 
-    matrix.data = (int **) malloc(matrix.rows * sizeof(int*));
+    M.data = (int **) malloc(M.rows * sizeof(int*));
 
-    if (matrix.data == NULL) {
+    if (M.data == NULL)
+    {
         printf("[ERR] Insufficient Memory");
-        matrix.error = 1;
-        return matrix;
+        M.error = 1;
+
+        return M;
     }
 
-    for (i = 0; i < matrix.rows; ++i)
+    for (i = 0; i < M.rows; ++i)
     {
-        matrix.data[i] = (int*) malloc(matrix.columns * sizeof(int));
+        M.data[i] = (int*) malloc(M.columns * sizeof(int));
 
-        if (matrix.data[i] == NULL)
+        if (M.data[i] == NULL)
         {
             printf("[ERR] Insufficient Memory");
-            matrix.error = 1;
-            return matrix;
+            M.error = 1;
+
+            return M;
         }
 
-        for (j = 0; j < matrix.columns; ++j)
+        for (j = 0; j < M.columns; ++j)
         {
-            matrix.data[i][j] = rand() % MAX_RANDOM_NUMBER;
+            M.data[i][j] = 0;
         }
     }
 
-    return matrix;
+    return M;
 }
 
-void showMatrix(Matrix* matrix)
+void populateMatrixWithRandomNumbers(Matrix* M)
 {
-    printf("\n[Showing Matrix]\n");
-    for (i = 0; i < matrix->rows; ++i)
+    for (i = 0; i < M->rows; ++i)
     {
-        for (j = 0; j < matrix->columns; ++j)
+        for (j = 0; j < M->columns; ++j)
         {
-            printf("%d \t", matrix->data[i][j]);
+            M->data[i][j] = rand() % 10;
+        }
+    }
+}
+
+void showMatrix(Matrix* M)
+{
+    //printf("\n[Showing Matrix]\n");
+    for (i = 0; i < M->rows; ++i)
+    {
+        for (j = 0; j < M->columns; ++j)
+        {
+            printf("%d \t", M->data[i][j]);
         }
         printf("\n");
     }
 }
 
-void destroyMatrix(Matrix* matrix)
+void destroyMatrix(Matrix* M)
 {
-    printf("\n[Destroying Matrix]\n");
+    //printf("\n[Destroying Matrix]\n");
 
-    for (i = 0; i < matrix->rows; ++i)
+    for (i = 0; i < M->rows; ++i)
     {
-        free(matrix->data[i]);
-        matrix->data[i] = NULL;
+        free(M->data[i]);
+        M->data[i] = NULL;
     }
 
-    free(matrix->data);
-    matrix->data = NULL;
+    free(M->data);
+    M->data = NULL;
+}
+
+Matrix multiplyMatrices(Matrix* A, Matrix* B)
+{
+    Matrix C;
+    C.error = 0;
+
+    if (A->columns != B->rows)
+    {
+        printf("[ERR] For matrix multiplication, the number of columns in the first matrix must equal the number of rows in the second matrix");
+        C.error = 1;
+        return C;
+    }
+
+    C = buildMatrix(A->rows, B->columns);
+
+    if (C.error == 1) return C;
+
+    for (i = 0; i < A->rows; ++i)
+    {
+        for (j = 0; j < B->columns; ++j)
+        {
+            for (k = 0; k < B->rows; ++k)
+            {
+                C.data[i][j] += A->data[i][k] * B->data[k][j];
+
+            }
+        }
+    }
+
+    return C;
 }
 

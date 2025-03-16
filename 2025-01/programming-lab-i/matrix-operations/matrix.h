@@ -8,12 +8,16 @@ typedef struct Matrix {
     int error;
 } Matrix;
 
-int getSizeOfMatrix(Matrix* matrix);
+Matrix buildMatrix(int rows, int columns);
 
-Matrix buildMatrix();
+int readMatrixSize(Matrix* M);
 
-void showMatrix(Matrix* matrix);
+void populateMatrixWithRandomNumbers(Matrix* M);
 
-void destroyMatrix(Matrix* matrix);
+Matrix multiplyMatrices(Matrix* A, Matrix* B);
+
+void showMatrix(Matrix* M);
+
+void destroyMatrix(Matrix* M);
 
 #endif
