@@ -77,7 +77,7 @@ int main(int argc, char** argv)
 
                 if (A.error == 1) return 1;
 
-                populateMatrixWithRandomNumbers(&A);
+                fillMatrixWithRandomNumbers(&A);
                 break;
             case 2:
                 shouldShowMenu = 1;
@@ -87,7 +87,7 @@ int main(int argc, char** argv)
 
                 if (B.error == 1) return 1;
 
-                populateMatrixWithRandomNumbers(&B);
+                fillMatrixWithRandomNumbers(&B);
                 break;
             case 3:
                 showMatrix(&A);

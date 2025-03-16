@@ -90,7 +90,7 @@ Matrix buildMatrix(int rows, int columns)
     return M;
 }
 
-void populateMatrixWithRandomNumbers(Matrix* M)
+void fillMatrixWithRandomNumbers(Matrix* M)
 {
     int i, j;
 

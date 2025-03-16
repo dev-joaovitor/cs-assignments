@@ -16,7 +16,7 @@ Matrix buildMatrix(int rows, int columns);
 
 int readMatrixSize(Matrix* M);
 
-void populateMatrixWithRandomNumbers(Matrix* M);
+void fillMatrixWithRandomNumbers(Matrix* M);
 
 void showMatrix(Matrix* M);
 
