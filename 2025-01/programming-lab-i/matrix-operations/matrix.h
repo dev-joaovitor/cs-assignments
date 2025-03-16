@@ -19,6 +19,8 @@ Matrix addMatrices(Matrix* A, Matrix* B);
 Matrix subtractMatrices(Matrix* A, Matrix* B);
 Matrix transposeMatrix(Matrix* M);
 
+Matrix generateIdentityMatrix();
+
 void showMatrix(Matrix* M);
 
 void destroyMatrix(Matrix* M);

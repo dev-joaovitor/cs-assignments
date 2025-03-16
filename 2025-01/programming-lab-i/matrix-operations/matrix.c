@@ -240,3 +240,34 @@ Matrix transposeMatrix(Matrix *M)
     return M_t;
 }
 
+Matrix generateIdentityMatrix()
+{
+    Matrix M;
+
+    int size = 0;
+
+    printf("Enter the identity matrix size: ");
+    scanf("%d", &size);
+
+    if (size <= 0 || size >= MAX_ROWS)
+    {
+        printf("[ERR] The size is invalid");
+        M.error = 1;
+        return M;
+    }
+    
+    M = buildMatrix(size, size);
+
+    if (M.error == 1) return M;
+
+    for (i = 0; i < M.rows; ++i)
+    {
+        for (j = 0; j < M.columns; ++j)
+        {
+            M.data[i][j] = i == j ? 1 : 0;
+        }
+    }
+
+    return M;
+}
+

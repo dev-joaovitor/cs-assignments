@@ -64,11 +64,20 @@ int main(int argc, char** argv)
     printf("E:\n");
     showMatrix(&E);
 
+    Matrix F = generateIdentityMatrix();
+
+    if (F.error == 1)
+        return 1;
+
+    printf("F:\n");
+    showMatrix(&F);
+
     destroyMatrix(&A);
     destroyMatrix(&B);
     destroyMatrix(&C);
     destroyMatrix(&D);
     destroyMatrix(&E);
+    destroyMatrix(&F);
 
     return 0;
 }
