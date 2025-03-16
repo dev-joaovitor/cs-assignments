@@ -181,6 +181,8 @@ Matrix addMatrices(Matrix* A, Matrix* B)
 
     C = buildMatrix(A->rows, A->columns);
 
+    if (C.error == 1) return C;
+
     for (i = 0; i < A->rows; ++i)
     {
         for (j = 0; j < A->columns; ++j)
@@ -207,6 +209,8 @@ Matrix subtractMatrices(Matrix* A, Matrix* B)
 
     C = buildMatrix(A->rows, A->columns);
 
+    if (C.error == 1) return C;
+
     for (i = 0; i < A->rows; ++i)
     {
         for (j = 0; j < A->columns; ++j)
@@ -217,3 +221,22 @@ Matrix subtractMatrices(Matrix* A, Matrix* B)
     
     return C;
 }
+
+Matrix transposeMatrix(Matrix *M)
+{
+    Matrix M_t = buildMatrix(M->columns, M->rows);
+    M_t.error = 0;
+
+    if (M_t.error == 1) return M_t;
+
+    for (i = 0; i < M_t.rows; ++i)
+    {
+        for (j = 0; j < M_t.columns; ++j)
+        {
+            M_t.data[i][j] = M->data[j][i];
+        }
+    }
+    
+    return M_t;
+}
+

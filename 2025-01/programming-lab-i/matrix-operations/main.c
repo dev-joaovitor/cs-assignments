@@ -15,6 +15,14 @@ int main(int argc, char** argv)
     populateMatrixWithRandomNumbers(&A);
     showMatrix(&A);
 
+    Matrix A_t = transposeMatrix(&A);
+
+    if (A_t.error == 1)
+        return 1;
+
+    printf("At:\n");
+    showMatrix(&A_t);
+
     Matrix B = buildMatrix(0,0);
 
     if (B.error == 1)
@@ -23,6 +31,14 @@ int main(int argc, char** argv)
     printf("B:\n");
     populateMatrixWithRandomNumbers(&B);
     showMatrix(&B);
+
+    Matrix B_t = transposeMatrix(&B);
+
+    if (B_t.error == 1)
+        return 1;
+
+    printf("Bt:\n");
+    showMatrix(&B_t);
 
     Matrix C = multiplyMatrices(&A, &B);
 
