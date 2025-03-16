@@ -1,1 +1,35 @@
 # Programming Lab I
+## Projects
+
+### [1. Matrix Operations](#1-matrix-operations-1)
+---
+
+### 1. Matrix Operations
+
+#### Summary
+
+The purpose of this program is to generate two random matrices and perform operations with them.
+
+#### What should it do?
+- [x] Read matrix A dimensions
+- [x] Fill matrix A with random values
+- [x] Read matrix B dimensions
+- [x] Fill matrix B with random values
+- [x] Show matrices
+- [x] Multiply matrices (A * B)
+- [x] Add matrices (A + B)
+- [x] Subtract matrices (A - B)
+- [x] Transpose matrices
+- [x] Generate identity matrix of given size
+
+#### How to run?
+```sh
+cd matrix-operations
+gcc main.c matrix.h matrix.c operations/operations.h operations/operations.c -o exec.o
+./exec.o
+```
+#### Java Version
+```
+gcc 13.1.0
+```
+###### [Back to projects](#projects)
