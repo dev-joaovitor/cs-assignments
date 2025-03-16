@@ -32,10 +32,18 @@ int main(int argc, char** argv)
     printf("C:\n");
     showMatrix(&C);
 
+    Matrix D = addMatrices(&A, &B);
+
+    if (D.error == 1)
+        return 1;
+
+    printf("D:\n");
+    showMatrix(&D);
 
     destroyMatrix(&A);
     destroyMatrix(&B);
     destroyMatrix(&C);
+    destroyMatrix(&D);
 
     return 0;
 }
