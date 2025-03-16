@@ -1,6 +1,10 @@
 #ifndef MATRIX_H
 #define MATRIX_H
 
+#define MAX_ROWS 100
+#define MAX_COLUMNS 100
+#define MAX_RANDOM_NUMBER 100
+
 typedef struct Matrix {
     int** data;
     int rows;
@@ -13,13 +17,6 @@ Matrix buildMatrix(int rows, int columns);
 int readMatrixSize(Matrix* M);
 
 void populateMatrixWithRandomNumbers(Matrix* M);
-
-Matrix multiplyMatrices(Matrix* A, Matrix* B);
-Matrix addMatrices(Matrix* A, Matrix* B);
-Matrix subtractMatrices(Matrix* A, Matrix* B);
-Matrix transposeMatrix(Matrix* M);
-
-Matrix generateIdentityMatrix();
 
 void showMatrix(Matrix* M);
 

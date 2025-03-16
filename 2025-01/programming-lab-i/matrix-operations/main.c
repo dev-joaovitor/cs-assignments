@@ -1,83 +1,163 @@
-#include "matrix.h"
+//#include <locale.h>
 #include <stdio.h>
-#include <locale.h>
+#include "matrix.h"
+#include "operations/operations.h"
+
+void showMenu(unsigned short int isCreatedA, unsigned short int isCreatedB)
+{
+    printf("[MENU] Options\n");
+
+    if (isCreatedA == 0)
+        printf("1 - Create matrix A\n");
+    else
+        printf("1 - Update matrix A\n");
+
+    if (isCreatedB == 0)
+        printf("2 - Create matrix B\n");
+    else
+        printf("2 - Update matrix B\n");
+
+    if (isCreatedA != 0)
+        printf("3 - Show matrix A\n");
+
+    if (isCreatedB != 0)
+        printf("4 - Show matrix B\n");
+
+    if (isCreatedA != 0 && isCreatedB != 0)
+    {
+        printf("5 - Multiply (A * B)\n");
+        printf("6 - Add (A + B)\n");
+        printf("7 - Subtract (A - B)\n");
+        printf("8 - Transpose matrix A\n");
+        printf("9 - Transpose matrix B\n");
+    }
+
+    printf("10 - Generate identity matrix\n");
+    printf("0 - Quit\n");
+}
 
 int main(int argc, char** argv)
 {
-    setlocale(LC_ALL, "Portuguese");
+    // setlocale(LC_ALL, "Portuguese");
 
-    Matrix A = buildMatrix(0,0);
+    printf("\n[ --- Matrix operations --- ]\n\n");
 
-    if (A.error == 1)
-        return 1;
+    unsigned short int option = 0,
+        shouldShowMenu = 1,
+        shouldCancel = 0;
 
-    printf("A:\n");
-    populateMatrixWithRandomNumbers(&A);
-    showMatrix(&A);
+    Matrix A = {},
+        B = {},
+        M = {};
 
-    Matrix A_t = transposeMatrix(&A);
+    while(1)
+    {
+        if (shouldCancel == 1) break;
 
-    if (A_t.error == 1)
-        return 1;
+        if (shouldShowMenu == 1)
+            showMenu(
+                A.columns == 0 ? 0 : 1,
+                B.columns == 0 ? 0 : 1
+            );
+        else printf("11 - Show menu\n");
 
-    printf("At:\n");
-    showMatrix(&A_t);
+        printf("[MENU] Choose one option: ");
+        scanf("%hu", &option);
 
-    Matrix B = buildMatrix(0,0);
+        printf("\n");
 
-    if (B.error == 1)
-        return 1;
+        shouldShowMenu = 0;
+        switch(option)
+        {
+            case 1:
+                shouldShowMenu = 1;
+                printf("[MATRIX A]\n");
+                destroyMatrix(&A);
+                A = buildMatrix(0, 0);
 
-    printf("B:\n");
-    populateMatrixWithRandomNumbers(&B);
-    showMatrix(&B);
+                if (A.error == 1) return 1;
 
-    Matrix B_t = transposeMatrix(&B);
+                populateMatrixWithRandomNumbers(&A);
+                break;
+            case 2:
+                shouldShowMenu = 1;
+                printf("[MATRIX B]\n");
+                destroyMatrix(&B);
+                B = buildMatrix(0, 0);
 
-    if (B_t.error == 1)
-        return 1;
+                if (B.error == 1) return 1;
 
-    printf("Bt:\n");
-    showMatrix(&B_t);
+                populateMatrixWithRandomNumbers(&B);
+                break;
+            case 3:
+                showMatrix(&A);
+                break;
+            case 4:
+                showMatrix(&B);
+                break;
+            case 5:
+                M = multiplyMatrices(&A, &B);
 
-    Matrix C = multiplyMatrices(&A, &B);
+                if (M.error != 1)
+                    showMatrix(&M);
 
-    if (C.error == 1)
-        return 1;
+                destroyMatrix(&M);
+                break;
+            case 6:
+                M = addMatrices(&A, &B);
 
-    printf("C:\n");
-    showMatrix(&C);
+                if (M.error != 1)
+                    showMatrix(&M);
 
-    Matrix D = addMatrices(&A, &B);
+                destroyMatrix(&M);
+                break;
+            case 7:
+                M = subtractMatrices(&A, &B);
 
-    if (D.error == 1)
-        return 1;
+                if (M.error != 1)
+                    showMatrix(&M);
 
-    printf("D:\n");
-    showMatrix(&D);
+                destroyMatrix(&M);
+                break;
+            case 8:
+                M = transposeMatrix(&A);
 
-    Matrix E = subtractMatrices(&A, &B);
+                if (M.error != 1)
+                    showMatrix(&M);
 
-    if (E.error == 1)
-        return 1;
+                destroyMatrix(&M);
+                break;
+            case 9:
+                M = transposeMatrix(&B);
 
-    printf("E:\n");
-    showMatrix(&E);
+                if (M.error != 1)
+                    showMatrix(&M);
 
-    Matrix F = generateIdentityMatrix();
+                destroyMatrix(&M);
+                break;
+            case 10:
+                M = generateIdentityMatrix();
 
-    if (F.error == 1)
-        return 1;
+                if (M.error != 1)
+                    showMatrix(&M);
 
-    printf("F:\n");
-    showMatrix(&F);
+                destroyMatrix(&M);
+                break;
+            case 11:
+                shouldShowMenu = 1;
+                break;
+            default:
+                destroyMatrix(&A);
+                destroyMatrix(&B);
+                destroyMatrix(&M);
+                shouldCancel = 1;
+                break;
+        }
 
-    destroyMatrix(&A);
-    destroyMatrix(&B);
-    destroyMatrix(&C);
-    destroyMatrix(&D);
-    destroyMatrix(&E);
-    destroyMatrix(&F);
+        printf("\n\n");
+    }
+
+    printf("[ --- Tschuss! --- ]\n");
 
     return 0;
 }
