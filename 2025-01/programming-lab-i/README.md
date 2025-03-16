@@ -25,7 +25,7 @@ The purpose of this program is to generate two random matrices and perform opera
 #### How to run?
 ```sh
 cd matrix-operations
-gcc main.c matrix.h matrix.c operations/operations.h operations/operations.c -o exec.o
+gcc main.c matrix.c operations/operations.c -o exec.o
 ./exec.o
 ```
 #### Java Version
