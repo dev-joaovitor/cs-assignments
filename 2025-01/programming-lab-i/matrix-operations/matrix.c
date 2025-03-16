@@ -191,3 +191,29 @@ Matrix addMatrices(Matrix* A, Matrix* B)
     
     return C;
 }
+
+Matrix subtractMatrices(Matrix* A, Matrix* B)
+{
+    Matrix C;
+    C.error = 0;
+
+    if (A->rows != B->rows
+        || A->columns != B->columns)
+    {
+        printf("[ERR] For matrix subtraction, both matrices must have an equal number of rows and columns");
+        C.error = 1;
+        return C;
+    }
+
+    C = buildMatrix(A->rows, A->columns);
+
+    for (i = 0; i < A->rows; ++i)
+    {
+        for (j = 0; j < A->columns; ++j)
+        {
+            C.data[i][j] = (A->data[i][j] - B->data[i][j]);
+        }
+    }
+    
+    return C;
+}

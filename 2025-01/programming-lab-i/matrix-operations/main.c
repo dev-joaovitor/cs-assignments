@@ -40,10 +40,19 @@ int main(int argc, char** argv)
     printf("D:\n");
     showMatrix(&D);
 
+    Matrix E = subtractMatrices(&A, &B);
+
+    if (E.error == 1)
+        return 1;
+
+    printf("E:\n");
+    showMatrix(&E);
+
     destroyMatrix(&A);
     destroyMatrix(&B);
     destroyMatrix(&C);
     destroyMatrix(&D);
+    destroyMatrix(&E);
 
     return 0;
 }
