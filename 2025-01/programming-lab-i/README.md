@@ -28,7 +28,7 @@ cd matrix-operations
 gcc main.c matrix.c operations/operations.c -o exec.o
 ./exec.o
 ```
-#### Java Version
+#### GCC (GNU Compiler Collection) Version
 ```
 gcc 13.1.0
 ```
