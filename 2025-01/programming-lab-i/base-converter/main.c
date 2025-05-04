@@ -108,8 +108,8 @@ void dropNewLineFromString(char* string, int length)
 {
     int i;
     for (i = 0; i < length; ++i) {
-        if (str[i] == '\n')
-            str[i] = '\0';
+        if (string[i] == '\n')
+            string[i] = '\0';
     }
 }
 
