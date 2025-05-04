@@ -15,109 +15,21 @@ typedef struct Number
 } Number;
 
 char digitsAsChar[MAX_DIGITS] = {
-    '0',
-    '1',
-    '2',
-    '3',
-    '4',
-    '5',
-    '6',
-    '7',
-    '8',
-    '9',
-    'a',
-    'b',
-    'c',
-    'd',
-    'e',
-    'f',
-    'g',
-    'h',
-    'i',
-    'j',
-    'k',
-    'l',
-    'm',
-    'n',
-    'o',
-    'p',
-    'q',
-    'r',
-    's',
-    't',
-    'u',
-    'v'
+    '0', '1', '2', '3', '4', '5',
+    '6', '7', '8', '9', 'a', 'b',
+    'c', 'd', 'e', 'f', 'g', 'h',
+    'i', 'j', 'k', 'l', 'm', 'n',
+    'o', 'p', 'q', 'r', 's', 't',
+    'u', 'v'
 };
 
-void dropNewLineFromStr(char* str, int length)
-{
-    int i = 0;
-    for (i = 0; i < length; ++i) {
-        if (str[i] == '\n')
-            str[i] = '\0';
-    }
-}
+int math_pow(int base, int exponent);
+void dropNewLineFromString(char* string, int length);
 
-int findEquivalentNumberFromDigit(char digit)
-{
-    int i = 0;
-    for (i = 0; i < MAX_DIGITS; ++i) {
-        if (digitsAsChar[i] == digit)
-            return i;
-    }
-    return 0;
-}
-
-int discoverNumberLength(char* digits)
-{
-    int length = 0;
-
-    int i = 0;
-    for (i = 0; i < MAX_NUMBER_LENGTH; ++i) {
-        if (digits[i] == '\0') break;
-
-        ++length;
-    }
-
-    return length;
-}
-
-void displayNumber(Number* number)
-{
-    printf("\n--- Number ---\n");
-    printf("number: %s\n", number->digits);
-    printf("base: %d\n", number->base);
-    printf("length: %d\n", number->length);
-    printf("\n");
-}
-
-int pow_(int base, int exponent)
-{
-    if (exponent == 0) return 1;
-
-    int result = base;
-    int i = 0;
-    for (i = 1; i < exponent; ++i) {
-        result *= base;
-    }
-    return result;
-}
-
-int convertToDecimal(Number* number)
-{
-    int result = 0;
-    int i = 0;
-    int j = number->length - 1;
-
-    for (i = 0; i < number->length; ++i) {
-        result +=
-            findEquivalentNumberFromDigit(number->digits[j]) * pow_(number->base, i);
-
-        --j;
-    }
-
-    return result;
-}
+int findEquivalentNumberFromDigit(char digit);
+int findNumberLength(char* digits);
+void displayNumber(Number* number);
+int convertToDecimal(Number* number);
 
 void runTests();
 
@@ -149,7 +61,7 @@ int main(int argc, char** argv)
             case 1:
                 printf("\nEnter a number: ");
                 fgets(digits, MAX_NUMBER_LENGTH, stdin);
-                dropNewLineFromStr(digits, MAX_NUMBER_LENGTH);
+                dropNewLineFromString(digits, MAX_NUMBER_LENGTH);
 
                 printf("Enter the base of the number: ");
                 scanf("%d", &base);
@@ -163,7 +75,7 @@ int main(int argc, char** argv)
 
                 number.base = base;
                 strcpy(number.digits, digits);
-                number.length = discoverNumberLength(number.digits);
+                number.length = findNumberLength(number.digits);
                 displayNumber(&number);
 
                 printf("The result of the conversion is: %d\n", convertToDecimal(&number));
@@ -178,6 +90,76 @@ int main(int argc, char** argv)
     }
 
     return 0;
+}
+
+int math_pow(int base, int exponent)
+{
+    if (exponent == 0) return 1;
+
+    int result = base;
+    int i;
+    for (i = 1; i < exponent; ++i) {
+        result *= base;
+    }
+    return result;
+}
+
+void dropNewLineFromString(char* string, int length)
+{
+    int i;
+    for (i = 0; i < length; ++i) {
+        if (str[i] == '\n')
+            str[i] = '\0';
+    }
+}
+
+int findEquivalentNumberFromDigit(char digit)
+{
+    int i;
+    for (i = 0; i < MAX_DIGITS; ++i) {
+        if (digitsAsChar[i] == digit)
+            return i;
+    }
+    return 0;
+}
+
+int findNumberLength(char* digits)
+{
+    int length = 0;
+
+    int i;
+    for (i = 0; i < MAX_NUMBER_LENGTH; ++i) {
+        if (digits[i] == '\0') break;
+
+        ++length;
+    }
+
+    return length;
+}
+
+void displayNumber(Number* number)
+{
+    printf("\n--- Number ---\n");
+    printf("number: %s\n", number->digits);
+    printf("base: %d\n", number->base);
+    printf("length: %d\n", number->length);
+    printf("\n");
+}
+
+int convertToDecimal(Number* number)
+{
+    int result = 0;
+    int index = 0;
+    int invertedIndex = number->length - 1; // the number order must begin from right to left
+
+    for (index = 0; index < number->length; ++index) {
+        result +=
+            findEquivalentNumberFromDigit(number->digits[invertedIndex]) * math_pow(number->base, index);
+
+        --invertedIndex;
+    }
+
+    return result;
 }
 
 void runTests()
@@ -211,10 +193,10 @@ void runTests()
         534013
     };
 
-    int i = 0;
+    int i;
     int passedTests = 0;
     for (i = 0; i < 5; ++i) {
-        number.length = discoverNumberLength(testNumbers[i]);
+        number.length = findNumberLength(testNumbers[i]);
         strcpy(number.digits, testNumbers[i]);
         number.base = testBases[i];
         
