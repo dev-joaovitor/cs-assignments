@@ -3,7 +3,7 @@
 
 ### [1. Matrix Operations](#1-matrix-operations-1)
 ### [2. Base Converter](#2-base-converter-1)
-### [3. Newton-Rhapson Method](#3-newton-rhapson-method-1)
+### [3. Newton-Raphson Method](#3-newton-raphson-method-1)
 ---
 
 ### 1. Matrix Operations
@@ -51,11 +51,11 @@ gcc main.c -o exec.o
 ```
 ---
 
-### 3. Newton-Rhapson Method
+### 3. Newton-Raphson Method
 
 #### Summary
 
-The purpose of this program is to allow you to find roots from equations using the Newton-Rhapson method.
+The purpose of this program is to allow you to find roots from equations using the Newton-Raphson method.
 
 #### What should it do?
 - [x] Read A, B, C, D
@@ -65,7 +65,7 @@ The purpose of this program is to allow you to find roots from equations using t
 
 #### How to run?
 ```sh
-cd newton-rhapson-calculus
+cd newton-raphson
 gcc main.c -o exec.o
 ./exec.o
 ```

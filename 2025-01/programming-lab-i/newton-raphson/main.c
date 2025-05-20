@@ -2,6 +2,7 @@
 #include <stdio.h>
 
 #define MAX_ITERATIONS 50
+#define LOG_FILE_NAME "newton-raphson.log"
 
 int main(void)
 {
@@ -15,7 +16,7 @@ int main(void)
 
     int n = 0;
 
-    FILE* log_file = fopen("newton-rhapson.log", "w");
+    FILE* log_file = fopen(LOG_FILE_NAME, "w");
 
     if (log_file == NULL) {
         printf("Error opening the file");
@@ -23,7 +24,7 @@ int main(void)
     }
 
     fprintf(log_file, "+----------------+\n");
-    fprintf(log_file, "| Newton-Rhapson |\n");
+    fprintf(log_file, "| Newton-Raphson |\n");
     fprintf(log_file, "+----------------+\n");
 
     fprintf(log_file, "\n[Formula: Ax^3 + Bx^2 + Cx + D]\n");
@@ -58,7 +59,7 @@ int main(void)
     scanf("%lf", &Eps);
     fprintf(log_file, "%lf\n", Eps);
 
-    printf("\nVerifique o arquivo `newton-rhapson.log` para ver o resultado!\n");
+    printf("\nVerifique o arquivo `%s` para ver o resultado!\n", LOG_FILE_NAME);
 
     do {
         if (n >= MAX_ITERATIONS) {
