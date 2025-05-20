@@ -1,6 +1,8 @@
 #include <math.h>
 #include <stdio.h>
 
+#define MAX_ITERATIONS 50
+
 int main(void)
 {
     float a, b, c, d;
@@ -59,6 +61,11 @@ int main(void)
     printf("\nVerifique o arquivo `newton-rhapson.log` para ver o resultado!\n");
 
     do {
+        if (n >= MAX_ITERATIONS) {
+            fprintf(log_file, "Seu cálculo atingiu o número maximo de iteracoes (%d), modifique os parametros e tente novamente.\n", MAX_ITERATIONS);
+            return 0;
+        };
+
         x0 = xn;
 
         // f(x) = ax^3 + bx^2 + cx + d
