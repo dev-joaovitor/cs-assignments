@@ -3,6 +3,7 @@
 
 ### [1. Matrix Operations](#1-matrix-operations-1)
 ### [2. Base Converter](#2-base-converter-1)
+### [3. Newton-Rhapson Method](#3-newton-rhapson-method-1)
 ---
 
 ### 1. Matrix Operations
@@ -45,6 +46,26 @@ The purpose of this program is to allow you to convert a number from any base (u
 #### How to run?
 ```sh
 cd base-converter
+gcc main.c -o exec.o
+./exec.o
+```
+---
+
+### 3. Newton-Rhapson Method
+
+#### Summary
+
+The purpose of this program is to allow you to find roots from equations using the Newton-Rhapson method.
+
+#### What should it do?
+- [x] Read A, B, C, D
+- [x] Read initial guess
+- [x] Read margin of error
+- [x] Iterate over the formula until the approximate result is below the margin of error or it reaches the maximum iteration number
+
+#### How to run?
+```sh
+cd newton-rhapson-calculus
 gcc main.c -o exec.o
 ./exec.o
 ```
