@@ -1,3 +1,6 @@
+# log files
+*.log
+
 # output files
 *.o
 *.out
