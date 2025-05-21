@@ -4,6 +4,7 @@
 #include "constants.h"
 #include "product.h"
 #include "customer.h"
+#include "service.h"
 
 Product createProduct()
 {
@@ -11,6 +12,7 @@ Product createProduct()
 
     printf("Enter the product name: ");
     fgets(product.name, PRODUCT_NAME_MAX, stdin);
+    dropNewLineFromString(product.name, PRODUCT_NAME_MAX);
 
     printf("Enter the product price: ");
     scanf("%lf", &product.price);
@@ -20,17 +22,24 @@ Product createProduct()
 
 void enqueueProduct(CustomerNode* customer, Product productData)
 {
+    ProductQueue* productQ = customer->data.products;
+
+    if (customer->data.totalItems == productQ->length) {
+        printf("[!] Maximum products reached, please checkout.\n");
+        return;
+    }
+
     ProductNode* product = malloc(sizeof(ProductNode));
 
     if (product == NULL) {
         printf("[!] Couldn't allocate a product node.\n");
         return;
     }
+    customer->data.totalBill += productData.price;
 
     product->data = productData;
     product->next = NULL;
 
-    ProductQueue* productQ = customer->data.products;
     productQ->length++;
 
     if (productQ->start == NULL) {
@@ -56,20 +65,5 @@ void freeProductQueue(ProductQueue* productQ)
         free(tempProduct);
     }
     free(productQ);
-}
-
-double calculateTotalPrice(ProductQueue * productQ)
-{
-    double total = 0.0;
-
-    ProductNode* product = productQ->start;
-
-    while (product != NULL) {
-        total += product->data.price;
-
-        product = product->next;
-    }
-
-    return total;
 }
 

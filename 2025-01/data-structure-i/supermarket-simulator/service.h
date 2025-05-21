@@ -14,4 +14,6 @@ void listProducts(ProductQueue*);
 // return 1 for successful and 0 otherwise.
 unsigned short checkout(CustomerNode*);
 
+void dropNewLineFromString(char*, int);
+
 #endif

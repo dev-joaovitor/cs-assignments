@@ -4,6 +4,7 @@
 #include "product.h"
 #include "customer.h"
 #include "constants.h"
+#include "service.h"
 
 Customer createCustomer()
 {
@@ -11,6 +12,7 @@ Customer createCustomer()
 
     printf("Enter the customer name: ");
     fgets(customer.name, CUSTOMER_NAME_MAX, stdin);
+    dropNewLineFromString(customer.name, CUSTOMER_NAME_MAX);
 
     printf("Enter the number of products: ");
     scanf("%d", &customer.totalItems);

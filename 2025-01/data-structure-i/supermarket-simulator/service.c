@@ -4,6 +4,18 @@
 #include "customer.h"
 #include "product.h"
 
+void dropNewLineFromString(char *string, int length)
+{
+    int i;
+    
+    for (i = 0; i < length; ++i) {
+        if (string[i] == '\n') {
+            string[i] = '\0';
+            break;
+        }
+    }
+}
+
 void finishService(CustomerQueue* customersQ)
 {
     while (customersQ->start != NULL) {
@@ -26,9 +38,9 @@ void listCustomers(CustomerQueue* customerQ)
 
     while (customer != NULL) {
         printf("+-------------------------------------------------+\n");
-        printf("%d - \n", i);
+        printf("*%d*\n", i);
         printf("Name: %s\n", customer->data.name);
-        printf("Total bill: %lf\n", customer->data.totalBill);
+        printf("Total bill: $%.2lf\n", customer->data.totalBill);
         printf("Total products: %d\n", customer->data.totalItems);
         printf("Total products in cart: %d\n", customer->data.products->length);
         customer = customer->next;
@@ -52,9 +64,9 @@ void listProducts(ProductQueue* productQ)
 
     while (product != NULL) {
         printf("+-------------------------------------------------+\n");
-        printf("%d - \n", i);
+        printf("*%d*\n", i);
         printf("Name: %s\n", product->data.name);
-        printf("Price: %lf\n", product->data.price);
+        printf("Price: $%.2lf\n", product->data.price);
         product = product->next;
         ++i;
     }
@@ -73,11 +85,9 @@ unsigned short checkout(CustomerNode* customer)
         return 0;
     }
 
-    double totalPrice = calculateTotalPrice(customer->data.products);
-
     printf("\n[CHECKOUT]\n");
     printf("Customer name: %s\n", customer->data.name);
-    printf("Total bill: %lf\n", totalPrice);
+    printf("Total bill: $%.2lf\n", customer->data.totalBill);
 
     return 1;
 }
