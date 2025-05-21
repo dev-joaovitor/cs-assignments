@@ -6,22 +6,16 @@
 
 void finishService(CustomerQueue* customersQ)
 {
-    CustomerNode* customer = customersQ->start;
-
-    while (customer != NULL) {
-        CustomerNode* tempCustomer = customer;
-        customer = customer->next;
-
-        freeProducts(tempCustomer->data.products);
-        free(tempCustomer);
+    while (customersQ->start != NULL) {
+        dequeueCustomer(customersQ);
     }
 }
 
-void listCustomers(CustomerQueue* customersQ)
+void listCustomers(CustomerQueue* customerQ)
 {
     printf("[LISTING CUSTOMERS]\n");
 
-    CustomerNode* customer = customersQ->start;
+    CustomerNode* customer = customerQ->start;
 
     if (customer == NULL) {
         printf("[!] There is no customer in the queue.");
@@ -42,19 +36,55 @@ void listCustomers(CustomerQueue* customersQ)
     }
 }
 
-void listProducts(ProductQueue* productsQ)
+void listProducts(ProductQueue* productQ)
 {
+    printf("[LISTING PRODUCTS]\n");
+
+    ProductNode* product = productQ->start;
+
+    if (product == NULL) {
+        printf("[!] There is no products in the customer cart.");
+        return;
+    }
+
+    int i = 0;
+
+    while (product != NULL) {
+        printf("%d - \n", i);
+        printf("Name: %s\n", product->data.name);
+        printf("Price: %lf\n", product->data.price);
+        printf("----------\n");
+        product = product->next;
+        ++i;
+    }
 }
 
-void checkout(CustomerNode* customerN)
+unsigned short checkout(CustomerNode* customer)
 {
+    if (customer == NULL) {
+        printf("[!] There is no customer to checkout\n");
+        return 0;
+    }
+
+    if (customer->data.products->start == NULL) {
+        printf("[!] There are no products to be checked out\n");
+        return 0;
+    }
+
+    double totalPrice = calculateTotalPrice(customer->data.products);
+
+    printf("\n[CHECKOUT]\n");
+    printf("Customer name: %s\n", customer->data.name);
+    printf("Total bill: %lf\n", totalPrice);
+
+    return 1;
 }
 
 unsigned short serviceMenu()
 {
     unsigned short choice = 0;
 
-    printf("0 - Exit\n");
+    printf("\n0 - Exit\n");
     printf("1 - Add customer to the end of the line\n");
     printf("2 - Show the customers in the line\n");
     printf("3 - Add a product to the customer cart\n");
@@ -63,13 +93,15 @@ unsigned short serviceMenu()
 
     printf("Select: ");
     scanf("%hu", &choice);
+    getchar();
+    printf("\n");
+
     return choice;
 }
 
-void startService(CustomerQueue* customersQ)
+void startService(CustomerQueue* customerQ)
 {
-    unsigned short choice = 0,
-        error = 0;
+    unsigned short choice = 0;
 
     while(1)
     {
@@ -77,15 +109,28 @@ void startService(CustomerQueue* customersQ)
 
         switch(choice) {
             case 0:
-                finishService(customersQ);
+                finishService(customerQ);
                 return;
             case 1:
-                pushCustomerIntoQueue(customersQ, createCustomer());
+                enqueueCustomer(customerQ, createCustomer());
+                break;
+            case 2:
+                listCustomers(customerQ);
+                break;
+            case 3:
+                pushProductIntoCart(customerQ->start, createProduct());
+                break;
+            case 4:
+                listProducts(customerQ->start->data.products);
+                break;
             case 5:
-                checkout(customersQ->start);
+                unsigned short wasSuccessful = checkout(customerQ->start);
+
+                if (wasSuccessful == 1) {
+                    dequeueCustomer(customerQ);
+                }
                 break;
         }
-
     }
 }
 

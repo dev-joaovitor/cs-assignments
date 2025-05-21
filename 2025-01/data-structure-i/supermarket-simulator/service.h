@@ -11,6 +11,7 @@ void finishService(CustomerQueue*);
 void listCustomers(CustomerQueue*);
 void listProducts(ProductQueue*);
 
-void checkout(CustomerNode*);
+// return 1 for successful and 0 otherwise.
+unsigned short checkout(CustomerNode*);
 
 #endif

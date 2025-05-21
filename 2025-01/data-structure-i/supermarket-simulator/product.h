@@ -34,5 +34,6 @@ struct ProductQueue
 Product createProduct();
 void pushProductIntoCart(CustomerNode*, Product);
 void freeProducts(ProductQueue*);
+double calculateTotalPrice(ProductQueue*);
 
 #endif

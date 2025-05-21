@@ -28,26 +28,26 @@ Customer createCustomer()
     return customer;
 }
 
-void enqueueCustomer(CustomerQueue* customerQ, Customer customer)
+void enqueueCustomer(CustomerQueue* customerQ, Customer customerData)
 {
-    if (customer.products == NULL) {
+    if (customerData.products == NULL) {
         printf("[!] Customer does not have a valid product list.\n");
         return;
     }
 
-    CustomerNode* customerN = malloc(sizeof(CustomerNode));
-    customerN->data = customer;
-    customerN->next = NULL;
+    CustomerNode* customer = malloc(sizeof(CustomerNode));
+    customer->data = customerData;
+    customer->next = NULL;
 
     customerQ->length++;
 
     if (customerQ->start == NULL) {
-        customerQ->start = customerN;
-        customerQ->end = customerN;
+        customerQ->start = customer;
+        customerQ->end = customer;
         return;
     }
-    customerQ->end->next = customerN;
-    customerQ->end = customerN;
+    customerQ->end->next = customer;
+    customerQ->end = customer;
 }
 
 void dequeueCustomer(CustomerQueue* customerQ)
