@@ -19,8 +19,10 @@ Customer createCustomer()
     customer.totalBill = 0;
     customer.products = malloc(sizeof(ProductQueue));
 
-    if (customer.products == NULL)
+    if (customer.products == NULL) {
+        printf("[!] Couldn't allocate a product queue.\n");
         return customer;
+    }
 
     customer.products->start = NULL;
     customer.products->end = NULL;
@@ -36,6 +38,12 @@ void enqueueCustomer(CustomerQueue* customerQ, Customer customerData)
     }
 
     CustomerNode* customer = malloc(sizeof(CustomerNode));
+
+    if (customer == NULL) {
+        printf("[!] Couldn't allocate a customer node.\n");
+        return;
+    }
+
     customer->data = customerData;
     customer->next = NULL;
 
@@ -54,9 +62,10 @@ void dequeueCustomer(CustomerQueue* customerQ)
 {
     CustomerNode* nextCustomer = customerQ->start->next;
 
-    freeProducts(customerQ->start->data.products);
+    freeProductQueue(customerQ->start->data.products);
     free(customerQ->start);
 
     customerQ->start = nextCustomer;
+    customerQ->length--;
 }
 

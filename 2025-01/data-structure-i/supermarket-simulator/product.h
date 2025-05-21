@@ -32,8 +32,8 @@ struct ProductQueue
 // function declarations
 
 Product createProduct();
-void pushProductIntoCart(CustomerNode*, Product);
-void freeProducts(ProductQueue*);
+void enqueueProduct(CustomerNode*, Product);
+void freeProductQueue(ProductQueue*);
 double calculateTotalPrice(ProductQueue*);
 
 #endif

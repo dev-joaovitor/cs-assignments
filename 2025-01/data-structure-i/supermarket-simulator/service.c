@@ -18,22 +18,23 @@ void listCustomers(CustomerQueue* customerQ)
     CustomerNode* customer = customerQ->start;
 
     if (customer == NULL) {
-        printf("[!] There is no customer in the queue.");
+        printf("[!] There is no customer in the queue.\n");
         return;
     }
 
     int i = 0;
 
     while (customer != NULL) {
+        printf("+-------------------------------------------------+\n");
         printf("%d - \n", i);
         printf("Name: %s\n", customer->data.name);
         printf("Total bill: %lf\n", customer->data.totalBill);
         printf("Total products: %d\n", customer->data.totalItems);
         printf("Total products in cart: %d\n", customer->data.products->length);
-        printf("----------\n");
         customer = customer->next;
         ++i;
     }
+    printf("+-------------------------------------------------+\n");
 }
 
 void listProducts(ProductQueue* productQ)
@@ -43,20 +44,21 @@ void listProducts(ProductQueue* productQ)
     ProductNode* product = productQ->start;
 
     if (product == NULL) {
-        printf("[!] There is no products in the customer cart.");
+        printf("[!] There is no products in the customer cart.\n");
         return;
     }
 
     int i = 0;
 
     while (product != NULL) {
+        printf("+-------------------------------------------------+\n");
         printf("%d - \n", i);
         printf("Name: %s\n", product->data.name);
         printf("Price: %lf\n", product->data.price);
-        printf("----------\n");
         product = product->next;
         ++i;
     }
+    printf("+-------------------------------------------------+\n");
 }
 
 unsigned short checkout(CustomerNode* customer)
@@ -101,7 +103,8 @@ unsigned short serviceMenu()
 
 void startService(CustomerQueue* customerQ)
 {
-    unsigned short choice = 0;
+    unsigned short choice = 0,
+        wasSuccessful = 0;
 
     while(1)
     {
@@ -111,24 +114,29 @@ void startService(CustomerQueue* customerQ)
             case 0:
                 finishService(customerQ);
                 return;
+
             case 1:
                 enqueueCustomer(customerQ, createCustomer());
                 break;
+
             case 2:
                 listCustomers(customerQ);
                 break;
+
             case 3:
-                pushProductIntoCart(customerQ->start, createProduct());
+                enqueueProduct(customerQ->start, createProduct());
                 break;
+
             case 4:
                 listProducts(customerQ->start->data.products);
                 break;
-            case 5:
-                unsigned short wasSuccessful = checkout(customerQ->start);
 
-                if (wasSuccessful == 1) {
+            case 5:
+                wasSuccessful = checkout(customerQ->start);
+
+                if (wasSuccessful == 1)
                     dequeueCustomer(customerQ);
-                }
+                wasSuccessful = 0;
                 break;
         }
     }

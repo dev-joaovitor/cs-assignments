@@ -3,6 +3,7 @@
 
 #include "constants.h"
 #include "product.h"
+#include "customer.h"
 
 Product createProduct()
 {
@@ -17,12 +18,31 @@ Product createProduct()
     return product;
 }
 
-void pushProductIntoCart(CustomerNode* customer, Product product)
+void enqueueProduct(CustomerNode* customer, Product productData)
 {
+    ProductNode* product = malloc(sizeof(ProductNode));
 
+    if (product == NULL) {
+        printf("[!] Couldn't allocate a product node.\n");
+        return;
+    }
+
+    product->data = productData;
+    product->next = NULL;
+
+    ProductQueue* productQ = customer->data.products;
+    productQ->length++;
+
+    if (productQ->start == NULL) {
+        productQ->start = product;
+        productQ->end = product;
+        return;
+    }
+    productQ->end->next = product;
+    productQ->end = product;
 }
 
-void freeProducts(ProductQueue* productQ)
+void freeProductQueue(ProductQueue* productQ)
 {
     if (productQ->start == NULL)
         return;
