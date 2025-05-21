@@ -1,0 +1,7 @@
+#ifndef CONSTANTS_H
+#define CONSTANTS_H
+
+#define PRODUCT_NAME_MAX 100
+#define CUSTOMER_NAME_MAX 50
+
+#endif
