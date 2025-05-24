@@ -18,5 +18,7 @@ int main (void)
 
     startService(customerQ);
 
+    free(customerQ);
+
     return 0;
 }

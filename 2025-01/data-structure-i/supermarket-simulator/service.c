@@ -16,6 +16,14 @@ void dropNewLineFromString(char *string, int length)
     }
 }
 
+void clearScreen()
+{
+    int i;
+    for (i = 0; i < 200; ++i) {
+        printf("\n");
+    }
+}
+
 void finishService(CustomerQueue* customersQ)
 {
     while (customersQ->start != NULL) {
@@ -97,16 +105,17 @@ unsigned short serviceMenu()
     unsigned short choice = 0;
 
     printf("\n0 - Exit\n");
-    printf("1 - Add customer to the end of the line\n");
-    printf("2 - Show the customers in the line\n");
-    printf("3 - Add a product to the customer cart\n");
+    printf("1 - Add customer to the end of the queue\n");
+    printf("2 - Show the customers in the queue\n");
+    printf("3 - Add a product to the current customer cart\n");
     printf("4 - Show the products of the current customer\n");
     printf("5 - Checkout the current customer cart\n");
 
     printf("Select: ");
     scanf("%hu", &choice);
     getchar();
-    printf("\n");
+
+    clearScreen();
 
     return choice;
 }
@@ -146,6 +155,7 @@ void startService(CustomerQueue* customerQ)
 
                 if (wasSuccessful == 1)
                     dequeueCustomer(customerQ);
+
                 wasSuccessful = 0;
                 break;
         }
