@@ -4,7 +4,7 @@
 #include "customer.h"
 #include "product.h"
 
-void dropNewLineFromString(char *string, int length)
+void dropNewLineFromString(char* string, int length)
 {
     int i;
     
@@ -24,11 +24,13 @@ void clearScreen()
     }
 }
 
-void finishService(CustomerQueue* customersQ)
+void finishService(CustomerQueue* customerQ)
 {
-    while (customersQ->start != NULL) {
-        dequeueCustomer(customersQ);
+    while (customerQ->start != NULL) {
+        dequeueCustomer(customerQ);
     }
+    free(customerQ);
+
 }
 
 void listCustomers(CustomerQueue* customerQ)
