@@ -53,9 +53,6 @@ void enqueueProduct(CustomerNode* customer, Product productData)
 
 void freeProductQueue(ProductQueue* productQ)
 {
-    if (productQ->start == NULL)
-        return;
-
     ProductNode* product = productQ->start;
 
     while (product != NULL) {
