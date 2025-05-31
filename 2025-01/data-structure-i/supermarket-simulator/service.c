@@ -40,7 +40,7 @@ void listCustomers(CustomerQueue* customerQ)
     CustomerNode* customer = customerQ->start;
 
     if (customer == NULL) {
-        printf("[!] There is no customer in the queue.\n");
+        printf("[!] There are no customers in the queue.\n");
         return;
     }
 
@@ -86,12 +86,12 @@ void listProducts(ProductQueue* productQ)
 unsigned short checkout(CustomerNode* customer)
 {
     if (customer == NULL) {
-        printf("[!] There is no customer to checkout\n");
+        printf("\n[!] There is no customer to checkout.\n");
         return 0;
     }
 
     if (customer->data.products->start == NULL) {
-        printf("[!] There are no products to be checked out\n");
+        printf("\n[!] There are no products to be checked out.\n");
         return 0;
     }
 
@@ -127,6 +127,8 @@ void startService(CustomerQueue* customerQ)
     unsigned short choice = 0,
         wasSuccessful = 0;
 
+    printf("\n[ ###### Welcome to Yum Yum Market ###### ]\n");
+
     while(1)
     {
         choice = serviceMenu();
@@ -134,6 +136,7 @@ void startService(CustomerQueue* customerQ)
         switch(choice) {
             case 0:
                 finishService(customerQ);
+                printf("\nCome back soon!\n");
                 return;
 
             case 1:
@@ -149,6 +152,11 @@ void startService(CustomerQueue* customerQ)
                 break;
 
             case 4:
+                if (customerQ->start == NULL) {
+                    printf("\n[!] There are no customers in the queue.\n");
+                    break;
+                }
+
                 listProducts(customerQ->start->data.products);
                 break;
 

@@ -22,6 +22,11 @@ Product createProduct()
 
 void enqueueProduct(CustomerNode* customer, Product productData)
 {
+    if (customer == NULL) {
+        printf("\n[!] There are no customers in the queue.\n");
+        return;
+    }
+
     ProductQueue* productQ = customer->data.products;
 
     if (customer->data.totalItems == productQ->length) {
