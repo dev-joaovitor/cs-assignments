@@ -19,7 +19,7 @@ Customer createCustomer()
     getchar();
 
     customer.totalBill = 0;
-    customer.products = malloc(sizeof(ProductQueue));
+    customer.products = (ProductQueue*) malloc(sizeof(ProductQueue));
 
     if (customer.products == NULL) {
         printf("[!] Couldn't allocate a product queue.\n");
@@ -39,7 +39,7 @@ void enqueueCustomer(CustomerQueue* customerQ, Customer customerData)
         return;
     }
 
-    CustomerNode* customer = malloc(sizeof(CustomerNode));
+    CustomerNode* customer = (CustomerNode*) malloc(sizeof(CustomerNode));
 
     if (customer == NULL) {
         printf("[!] Couldn't allocate a customer node.\n");

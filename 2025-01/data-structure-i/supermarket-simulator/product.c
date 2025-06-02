@@ -34,7 +34,7 @@ void enqueueProduct(CustomerNode* customer, Product productData)
         return;
     }
 
-    ProductNode* product = malloc(sizeof(ProductNode));
+    ProductNode* product = (ProductNode*) malloc(sizeof(ProductNode));
 
     if (product == NULL) {
         printf("[!] Couldn't allocate a product node.\n");

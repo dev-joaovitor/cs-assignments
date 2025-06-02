@@ -5,7 +5,7 @@
 
 int main (void)
 {
-    CustomerQueue* customerQ = malloc(sizeof(CustomerQueue));
+    CustomerQueue* customerQ = (CustomerQueue*) malloc(sizeof(CustomerQueue));
 
     if (customerQ == NULL) {
         printf("[!] Couldn't allocate a customer queue.\n");
