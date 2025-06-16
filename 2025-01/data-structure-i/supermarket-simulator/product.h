@@ -19,7 +19,7 @@ typedef struct Product
 struct ProductNode
 {
     Product data;
-    struct ProductNode* next;
+    ProductNode* next;
 };
 
 struct ProductQueue

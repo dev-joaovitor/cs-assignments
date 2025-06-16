@@ -28,6 +28,7 @@ Customer createCustomer()
 
     customer.products->start = NULL;
     customer.products->end = NULL;
+    customer.products->length = 0;
 
     return customer;
 }
