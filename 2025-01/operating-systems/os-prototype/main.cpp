@@ -9,6 +9,7 @@
 #include <unordered_map>
 
 enum class PState { NEW, READY, EXECUTING, BLOCKED, FINISHED };
+enum class PSchedulerAlgo { SJF, FIFO };
 
 size_t get_random_value() {
     size_t min = 300, max = 800;
@@ -39,6 +40,7 @@ private:
     size_t execution_duration_in_ms;
 
     static size_t last_pid;
+    static PSchedulerAlgo scheduler_algorithm;
 
     Process(const std::string &name)
         : pid(++last_pid), name(name), state(PState::NEW),
@@ -69,7 +71,6 @@ public:
         ready_queue_empty_cv.notify_one();
     }
 
-    // getters
     size_t get_pid() { return this->pid; }
     PState get_state() { return this->state; }
     std::string get_name() { return this->name; }
@@ -77,7 +78,7 @@ public:
         return this->execution_duration_in_ms;
     }
 
-    std::string getStateString() {
+    std::string get_state_string() {
         switch (this->state) {
             case PState::NEW:
                 return "New";
@@ -91,6 +92,17 @@ public:
                 return "Finished";
             default:
                 return "Corrupted";
+        }
+    }
+
+    static std::string get_scheduler_algo_string() {
+        switch (scheduler_algorithm) {
+            case PSchedulerAlgo::SJF:
+                return "SJF";
+            case PSchedulerAlgo::FIFO:
+                return "FIFO";
+            default:
+                return "None";
         }
     }
 
@@ -121,7 +133,7 @@ public:
 
     void display_process_information() {
         std::cout << "Process (" << this->get_pid() << ") " << this->get_name()
-            << " [" << this->getStateString() << "]";
+            << " [" << this->get_state_string() << "]";
 
         if (this->get_state() == PState::FINISHED)
             std::cout << " | " << this->get_execution_duration_in_ms() << "ms";
@@ -134,7 +146,7 @@ public:
     static void list_all_processes() {
         for (auto &[pid, proc] : Process::process_table) {
             std::cout << "\nPID " << pid << ": " << proc->get_name() << " ["
-                << proc->getStateString() << "]\n";
+                << proc->get_state_string() << "]\n";
         }
     }
 
@@ -146,6 +158,30 @@ public:
         process_table.clear();
     }
 
+    static void switch_scheduler_algo() {
+        if (scheduler_algorithm == PSchedulerAlgo::FIFO)
+            scheduler_algorithm = PSchedulerAlgo::SJF;
+        else
+            scheduler_algorithm = PSchedulerAlgo::FIFO;
+    }
+
+    static Process* find_shortest_job_from_ready() {
+        if (ready_queue.empty()) return nullptr;
+
+        auto shortest_iterator = ready_queue.begin();
+
+        for (auto iterator_ptr = ready_queue.begin(); iterator_ptr != ready_queue.end(); ++iterator_ptr) {
+            if ((*iterator_ptr)->execution_duration_in_ms
+                < (*shortest_iterator)->execution_duration_in_ms) {
+                shortest_iterator = iterator_ptr;
+            }
+        }
+
+        Process* shortest_job = *shortest_iterator;
+        ready_queue.erase(shortest_iterator); // remove from queue
+        return shortest_job;
+    }
+    
     static void scheduler_routine() {
         while (true) {
             std::unique_lock<std::mutex> lock(ready_mtx);
@@ -153,12 +189,22 @@ public:
             // wait until queue is not empty
             ready_queue_empty_cv.wait(lock, [] { return !ready_queue.empty(); });
 
-            Process *next = ready_queue.front();
-            ready_queue.pop_front();
+            Process *next = nullptr;
+
+            if (scheduler_algorithm == PSchedulerAlgo::FIFO)
+            {
+                next = ready_queue.front();
+                ready_queue.pop_front();
+            }
+            else
+            {
+                next = find_shortest_job_from_ready();
+            }
 
             lock.unlock();
 
-            next->run();
+            if (next)
+                next->run();
         }
     }
 
@@ -192,6 +238,7 @@ public:
 
 // initializing static member of Process
 size_t Process::last_pid = 0;
+PSchedulerAlgo Process::scheduler_algorithm = PSchedulerAlgo::FIFO;
 std::deque<Process *> Process::ready_queue;
 std::deque<Process *> Process::blocked_queue;
 std::unordered_map<size_t, Process *> Process::process_table;
@@ -203,11 +250,14 @@ int main(void) {
 
     size_t menu_choice;
 
+    std::cout << "[ --- Welcome to Unnamed OS --- ] \n\n";
+
     while (true) {
-        std::cout << "--- Welcome to Unnamed OS ---\n";
         std::cout << "0: Exit\n";
         std::cout << "1: Spawn process\n";
-        std::cout << "2: List all processes\n";
+        std::cout << "2: Switch scheduler algorithm (current: "
+            << Process::get_scheduler_algo_string() << ")\n";
+        std::cout << "3: List all processes\n";
         std::cout << "Choose an option: ";
         std::cin >> menu_choice;
 
@@ -229,6 +279,9 @@ int main(void) {
         }
 
         if (menu_choice == 2)
+            Process::switch_scheduler_algo();
+
+        if (menu_choice == 3)
             Process::list_all_processes();
     }
 
