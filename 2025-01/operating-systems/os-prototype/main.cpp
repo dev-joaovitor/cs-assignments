@@ -1,84 +1,83 @@
-// processes
-
 #include <chrono>
 #include <condition_variable>
-#include <ctime>
 #include <deque>
 #include <iostream>
 #include <mutex>
 #include <random>
 #include <string>
 #include <thread>
+#include <unordered_map>
 
+enum class PState { NEW, READY, EXECUTING, BLOCKED, FINISHED };
 
-enum class PState
-{
-    NEW, READY, EXECUTING,
-    BLOCKED, FINISHED
-};
-
-size_t get_random_value()
-{
-    size_t min = 300,
-        max = 800;
+size_t get_random_value() {
+    size_t min = 300, max = 800;
 
     static std::mt19937 rnd(std::time(nullptr));
     return std::uniform_int_distribution<>(min, max)(rnd);
 }
 
-bool should_block_process()
-{
+// function to randomly decide if
+// the process will have an I/O block
+bool should_block_process() {
     static std::mt19937 rnd(std::time(nullptr));
     return std::uniform_int_distribution<>(0, 1)(rnd);
 }
 
+// sync controls
 std::mutex ready_mtx;
 std::condition_variable ready_queue_empty_cv;
 
 std::mutex blocked_mtx;
 std::condition_variable blocked_queue_empty_cv;
 
-class Process
-{
+class Process {
 private:
     size_t pid;
     PState state;
     std::string name;
     size_t execution_duration_in_ms;
 
-    static unsigned int last_pid;
+    static size_t last_pid;
+
+    Process(const std::string &name)
+        : pid(++last_pid), name(name), state(PState::NEW),
+        execution_duration_in_ms(get_random_value()) {}
 
 public:
-    static std::deque<Process*> ready_queue;
-    static std::deque<Process*> blocked_queue;
+    static std::deque<Process *> ready_queue;
+    static std::deque<Process *> blocked_queue;
+    static std::unordered_map<size_t, Process *> process_table;
 
-    Process(std::string name)
-        : pid(++last_pid), name(name), state(PState::NEW),
-        execution_duration_in_ms(get_random_value())
-    {
+    static void create(const std::string &name) {
+        Process *p = new Process(name);
+        process_table[p->get_pid()] = p;
+
         size_t duration_to_be_ready = get_random_value();
-        this->displayProcessInformation();
+        p->display_process_information();
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(duration_to_be_ready));
-        this->updateState(PState::READY);
-        this->displayProcessInformation();
+        std::this_thread::sleep_for(
+            std::chrono::milliseconds(duration_to_be_ready));
+        p->update_state(PState::READY);
+        p->display_process_information();
 
         {
             std::lock_guard<std::mutex> guard(ready_mtx);
-            ready_queue.push_back(this);
+            ready_queue.push_back(p);
         }
 
         ready_queue_empty_cv.notify_one();
     }
 
     // getters
-    size_t getPID() { return this->pid; }
-    PState getState() { return this->state; }
-    std::string getName() { return this->name; }
-    size_t getExecutionDurationInMs() { return this->execution_duration_in_ms; }
+    size_t get_pid() { return this->pid; }
+    PState get_state() { return this->state; }
+    std::string get_name() { return this->name; }
+    size_t get_execution_duration_in_ms() {
+        return this->execution_duration_in_ms;
+    }
 
-    std::string getStateString()
-    {
+    std::string getStateString() {
         switch (this->state) {
             case PState::NEW:
                 return "New";
@@ -95,17 +94,15 @@ public:
         }
     }
 
-    // actions
-    void run()
-    {
-        this->updateState(PState::EXECUTING);
-        this->displayProcessInformation();
+    void run() {
+        this->update_state(PState::EXECUTING);
+        this->display_process_information();
 
-        if (should_block_process())
-        {
-            std::this_thread::sleep_for(std::chrono::milliseconds(this->execution_duration_in_ms / 2));
-            this->updateState(PState::BLOCKED);
-            this->displayProcessInformation();
+        if (should_block_process()) {
+            std::this_thread::sleep_for(
+                std::chrono::milliseconds(this->execution_duration_in_ms / 2));
+            this->update_state(PState::BLOCKED);
+            this->display_process_information();
 
             {
                 std::lock_guard<std::mutex> lock(blocked_mtx);
@@ -115,29 +112,48 @@ public:
             return;
         }
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(this->execution_duration_in_ms));
+        std::this_thread::sleep_for(
+            std::chrono::milliseconds(this->execution_duration_in_ms));
 
-        this->updateState(PState::FINISHED);
-        this->displayProcessInformation();
+        this->update_state(PState::FINISHED);
+        this->display_process_information();
     }
 
-    void displayProcessInformation()
-    {
-        std::cout << "Process (" << this->getPID() << ") "
-            << this->getName() << " [" << this->getStateString()
-            << "] | " << this->getExecutionDurationInMs() << "ms" << "\n";
+    void display_process_information() {
+        std::cout << "Process (" << this->get_pid() << ") " << this->get_name()
+            << " [" << this->getStateString() << "]";
+
+        if (this->get_state() == PState::FINISHED)
+            std::cout << " | " << this->get_execution_duration_in_ms() << "ms";
+
+        std::cout << "\n";
     }
 
-    static void scheduler_routine()
-    {
-        while (true)
-        {
+    void update_state(const PState& new_state) { this->state = new_state; }
+
+    static void list_all_processes() {
+        for (auto &[pid, proc] : Process::process_table) {
+            std::cout << "\nPID " << pid << ": " << proc->get_name() << " ["
+                << proc->getStateString() << "]\n";
+        }
+    }
+
+    static void destroy_all() {
+        for (auto &[pid, proc] : process_table) {
+            delete proc;
+        }
+
+        process_table.clear();
+    }
+
+    static void scheduler_routine() {
+        while (true) {
             std::unique_lock<std::mutex> lock(ready_mtx);
 
             // wait until queue is not empty
             ready_queue_empty_cv.wait(lock, [] { return !ready_queue.empty(); });
 
-            Process* next = ready_queue.front();
+            Process *next = ready_queue.front();
             ready_queue.pop_front();
 
             lock.unlock();
@@ -146,24 +162,23 @@ public:
         }
     }
 
-    static void io_device_routine()
-    {
-        while (true)
-        {
+    static void io_device_routine() {
+        while (true) {
             std::unique_lock<std::mutex> lock(blocked_mtx);
 
             // wait until queue is not empty
             blocked_queue_empty_cv.wait(lock, [] { return !blocked_queue.empty(); });
 
-            Process* blocked_p = blocked_queue.front();
+            Process *blocked_p = blocked_queue.front();
             blocked_queue.pop_front();
 
             lock.unlock();
 
-            std::this_thread::sleep_for(std::chrono::milliseconds(get_random_value()));
+            std::this_thread::sleep_for(
+                std::chrono::milliseconds(get_random_value()));
 
-            blocked_p->updateState(PState::READY);
-            blocked_p->displayProcessInformation();
+            blocked_p->update_state(PState::READY);
+            blocked_p->display_process_information();
 
             {
                 std::lock_guard<std::mutex> ready_lock(ready_mtx);
@@ -173,26 +188,49 @@ public:
             ready_queue_empty_cv.notify_one();
         }
     }
-
-    // setters
-    void updateState (PState new_state) { this->state = new_state; }
 };
 
 // initializing static member of Process
-unsigned int Process::last_pid = 0;
-std::deque<Process*> Process::ready_queue;
-std::deque<Process*> Process::blocked_queue;
+size_t Process::last_pid = 0;
+std::deque<Process *> Process::ready_queue;
+std::deque<Process *> Process::blocked_queue;
+std::unordered_map<size_t, Process *> Process::process_table;
 
-int main (void)
-{
-    std::jthread scheduler_thread ([&] { Process::scheduler_routine(); });
-    std::jthread io_device_thread ([&] { Process::io_device_routine(); });
+int main(void) {
+    // Process threads
+    std::jthread scheduler_thread([&] { Process::scheduler_routine(); });
+    std::jthread io_device_thread([&] { Process::io_device_routine(); });
 
-    Process p("First");
-    Process p2("Second");
-    Process p3("Third");
-    Process p4("Fourth");
+    size_t menu_choice;
+
+    while (true) {
+        std::cout << "--- Welcome to Unnamed OS ---\n";
+        std::cout << "0: Exit\n";
+        std::cout << "1: Spawn process\n";
+        std::cout << "2: List all processes\n";
+        std::cout << "Choose an option: ";
+        std::cin >> menu_choice;
+
+        if (menu_choice == 0)
+        {
+            Process::destroy_all();
+            break;
+        }
+
+        if (menu_choice == 1)
+        {
+            std::string process_name;
+            std::cout << "Process name: ";
+
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::getline(std::cin, process_name);
+
+            Process::create(process_name);
+        }
+
+        if (menu_choice == 2)
+            Process::list_all_processes();
+    }
 
     return 0;
 }
-
