@@ -8,24 +8,60 @@
 #include <thread>
 #include <unordered_map>
 
-enum class PState { NEW, READY, EXECUTING, BLOCKED, FINISHED };
+class Memory {
+private:
+    const static size_t LIMIT = 4096; // 4kb
+
+public:
+    static size_t used;
+
+    static bool allocate(size_t amount)
+    {
+        if ((amount + used) > Memory::LIMIT)
+            return false;
+
+        used += amount;
+
+        std::cout << "MEMORY USED: " << used << " / " << LIMIT;
+
+        return true;
+    }
+
+    static bool deallocate(size_t amount)
+    {
+        if (amount > used)
+            return false;
+
+        used -= amount;
+
+        std::cout << "MEMORY USED: " << used << " / " << LIMIT;
+
+        return true;
+    }
+};
+
+size_t Memory::used = 0;
+
+enum class PState { NEW, READY, EXECUTING, BLOCKED, FINISHED, REJECTED };
 enum class PSchedulerAlgo { SJF, FIFO };
 
-size_t get_random_value() {
-    size_t min = 300, max = 800;
-
+size_t get_random_value(const size_t& min = 300, const size_t& max = 800) {
     static std::mt19937 rnd(std::time(nullptr));
+
+    if (min < max)
+        return std::uniform_int_distribution<>(300, 800)(rnd);
+
     return std::uniform_int_distribution<>(min, max)(rnd);
 }
 
-// function to randomly decide if
-// the process will have an I/O block
+// function to randomly decide whether
+// the process will have an I/O block or not
 bool should_block_process() {
     static std::mt19937 rnd(std::time(nullptr));
     return std::uniform_int_distribution<>(0, 1)(rnd);
 }
 
-// sync controls
+// Process sync controls
 std::mutex ready_mtx;
 std::condition_variable ready_queue_empty_cv;
 
@@ -38,13 +74,15 @@ private:
     PState state;
     std::string name;
     size_t execution_duration_in_ms;
+    size_t memory_usage;
 
     static size_t last_pid;
     static PSchedulerAlgo scheduler_algorithm;
 
     Process(const std::string &name)
         : pid(++last_pid), name(name), state(PState::NEW),
-        execution_duration_in_ms(get_random_value()) {}
+        execution_duration_in_ms(get_random_value(800, 2000)),
+        memory_usage(get_random_value(100, 1000)) {}
 
 public:
     static std::deque<Process *> ready_queue;
@@ -60,6 +98,12 @@ public:
 
         std::this_thread::sleep_for(
             std::chrono::milliseconds(duration_to_be_ready));
+
+        if (!Memory::allocate(p->memory_usage)) {
+            std::cout << "I'm sorry, your process is REJECTED\n";
+            p->update_state(PState::REJECTED);
+        }
+
         p->update_state(PState::READY);
         p->display_process_information();
 
@@ -80,29 +124,21 @@ public:
 
     std::string get_state_string() {
         switch (this->state) {
-            case PState::NEW:
-                return "New";
-            case PState::READY:
-                return "Ready";
-            case PState::EXECUTING:
-                return "Executing";
-            case PState::BLOCKED:
-                return "Blocked";
-            case PState::FINISHED:
-                return "Finished";
-            default:
-                return "Corrupted";
+            case PState::NEW: return "New";
+            case PState::READY: return "Ready";
+            case PState::BLOCKED: return "Blocked";
+            case PState::FINISHED: return "Finished";
+            case PState::EXECUTING: return "Executing";
+            case PState::REJECTED: return "Rejected";
+            default: return "Corrupted";
         }
     }
 
     static std::string get_scheduler_algo_string() {
         switch (scheduler_algorithm) {
-            case PSchedulerAlgo::SJF:
-                return "SJF";
-            case PSchedulerAlgo::FIFO:
-                return "FIFO";
-            default:
-                return "None";
+            case PSchedulerAlgo::SJF: return "SJF";
+            case PSchedulerAlgo::FIFO: return "FIFO";
+            default: return "None";
         }
     }
 
@@ -126,6 +162,10 @@ public:
 
         std::this_thread::sleep_for(
             std::chrono::milliseconds(this->execution_duration_in_ms));
+
+        if (!Memory::deallocate(this->memory_usage)) {
+            std::cout << "Not deallocated\n\n";
+        }
 
         this->update_state(PState::FINISHED);
         this->display_process_information();
@@ -221,7 +261,8 @@ public:
             lock.unlock();
 
             std::this_thread::sleep_for(
-                std::chrono::milliseconds(get_random_value()));
+                std::chrono::milliseconds(get_random_value())
+            );
 
             blocked_p->update_state(PState::READY);
             blocked_p->display_process_information();
