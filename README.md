@@ -20,3 +20,6 @@ This repo is intended to store my code assignments for my computer science bache
 #### Subjects
 
 ##### [1. Programming Lab I](https://github.com/dev-joaovitor/cs-assignments/tree/main/2025-01/programming-lab-i)
+##### [2. Data Structures I](https://github.com/dev-joaovitor/cs-assignments/tree/main/2025-01/data-structure-i)
+##### [3. Operating Systems](https://github.com/dev-joaovitor/cs-assignments/tree/main/2025-01/operating-systems)
+##### [4. Computer Architecture](https://github.com/dev-joaovitor/cs-assignments/tree/main/2025-01/computer-architecture)
