@@ -101,7 +101,7 @@ public:
 
         if (!Memory::allocate(p->memory_usage)) {
             std::cout << "I'm sorry, your process is REJECTED\n";
-            p->update_state(PState::REJECTED);
+            return p->update_state(PState::REJECTED);
         }
 
         p->update_state(PState::READY);
