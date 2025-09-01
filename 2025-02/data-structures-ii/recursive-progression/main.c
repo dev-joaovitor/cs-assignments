@@ -1,13 +1,13 @@
 #include <stdio.h>
 
-int power(int base, int expoent)
+int power(int base, int exponent)
 {
     int result = 1;
 
-    while (expoent > 0) {
+    while (exponent > 0) {
         result *= base;
 
-        --expoent;
+        --exponent;
     }
 
     return result;
@@ -56,6 +56,13 @@ int recursive_geometric_progression(
 
 int main()
 {
+    printf("[RECURSIVE ALGORITHMS]\n");
+    printf("--------------------------\n");
+    printf("[PROGRESSIONS]\n");
+    printf("[ARITHMETIC (A.P)]");
+    printf(" [AND]");
+    printf(" [GEOMETRIC (G.P)]\n");
+
     int first_term,
         reason,
         total_terms;
