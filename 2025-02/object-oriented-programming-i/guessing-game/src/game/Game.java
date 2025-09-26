@@ -14,6 +14,10 @@ public class Game {
         restart();
     }
 
+    private void changeConfig() {
+        config = Config.generate();
+    }
+
     private void restart() {
         this.win = false;
         this.target = IO.getRandomIntBetween(config.minimumGuess, config.maximumGuess);
@@ -39,15 +43,20 @@ public class Game {
         this.guess = guess;
     }
 
-    public void start() {
-        IO.printf("_-_-_- WELCOME TO |GUESS THE NUMBER| -_-_-_\n\n");
+    public void run() {
+        IO.printf("\n\n_-_-_- WELCOME TO |GUESS THE NUMBER| -_-_-_\n\n");
 
-        IO.logf("Starting...");
+        IO.logf("Running...");
         IO.logf("Config: ");
         IO.logf("\n" + config.toString());
 
         while (true) {
             IO.logf("Correct answer: %d\n\n", target);
+            IO.printf(
+                "[!] The target number is between %d and %d\n",
+                config.minimumGuess,
+                config.maximumGuess
+            );
 
             for (int i = 1; i <= config.maximumAttempts; ++i) {
                 IO.printf("Current attempt: %d out of %d\n\n", i, config.maximumAttempts);
@@ -60,23 +69,28 @@ public class Game {
                     continue;
                 }
 
-                IO.printf("You got it correct, well done!\n\n");
+                IO.printf("\nYou got it correct, well done!\n\n");
                 this.win = true;
                 break;
             }
 
-            IO.printf("Correct answer was: %d\n\n", target);
-
             if (this.win) {
                 IO.printf("=) Congratulations, you won the game! (=\n\n");
             } else {
+                IO.printf("Correct answer was: %d\n\n", target);
                 IO.printf("=( You exceeded the attempts.\nBest of luck next time! )=\n\n");
             }
 
             IO.printf("Want to play again??!? ");
             if (!IO.askBooleanQuestion()) break;
 
+            IO.printf("Want to change the settings? ");
+            if (IO.askBooleanQuestion()) {
+                changeConfig();
+            }
+
             IO.logf("Restarting...");
+            IO.printf("\n\n");
             restart();
         }
     }
